@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搞事情</title>
+    <link rel="stylesheet" href="../lib/normalize.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <div id="main">
+        <div class="navbar">
+            <h1>任务提醒</h1>
+        </div>
+
+        <div class="header">
+            计划的制定比计划本身更为重要~
+        </div>
+
+        <form @submit.prevent="merge" id="task-form">
+            <div class="wrap">
+                <!-- 取消输入历史待选 autocomplete="off" -->
+                <input v-model="current.title" type="text" ref="task_input" id="task-input" autocomplete="off" placeholder="这里添加任务...">
+                <span id="more" @click="show_more()">...</span>
+                <div v-show="is_show" class="detail">
+                    <textarea v-model="current.desc" placeholder="这里添加更多描述..."></textarea>
+                    <input v-model="current.remind_time" type="datetime-local">
+                </div>
+                <button type="submit" class="primary">确定</button>
+            </div>
+        </form>
+        <div class="task-list">
+            <div class="wrap">
+                <div class="segment-title">未完成</div>
+                <task class="item" :todo="todo"
+                v-for="todo,index in list" 
+                :key = "index"
+                v-if="!todo.completed">
+                </task>
+            </div>
+        </div>
+        <div class="task-list">
+            <div class="wrap">
+            <div class="segment-title">已完成</div>
+            <task class="item completed" :todo="todo"
+            v-for="todo,index in list" 
+            :key = "index"  
+            v-if="todo.completed">
+            </task>
+            </div>
+            
+        </div>
+    </div>
+    <audio id="remind-sound" controls src="../static/remind_sound.mp3"></audio>
+    <template id="task-tpl">
+        <div>
+            <div @click="action('toggle_completed',todo.id)" v-if="!todo.completed" class="toggle-completed">
+                <img src="../static/icon_todo.png" class="icon">                  
+            </div>
+            <div @click="action('toggle_completed',todo.id)" v-else class="toggle-completed">
+                <img src="../static/icon_done.png" class="icon">                  
+            </div>
+            <span class="title">{{todo.title}}</span>
+            <button @click="action('remove',todo.id)">删除</button>
+            <button @click="action('set_current',todo)">更新</button>
+            <button @click="action('toggle_detail',todo.id)">详情</button>
+            <div v-if="todo.show_detail" class="detail">{{todo.desc || '暂无详情'}}</div>
+        </div>
+    </template>
+</body>
+<script src="../lib/vue.js"></script>
+<script src="../js/myStorage.js"></script>
+<script src="../js/main.js"></script>
+</html>
